@@ -1,5 +1,4 @@
 <?php
-// models/Odontologo.php
 require_once __DIR__ . '/../config/db.php';
 
 class Odontologo {
@@ -12,6 +11,7 @@ class Odontologo {
 
     // Listar doctores con sus nombres (uniendo con tabla usuarios)
     public function listarTodos() {
+        // Hacemos JOIN para obtener el nombre del usuario asociado al doctor
         $query = "SELECT o.id_odontologo, o.especialidad, u.nombres, u.apellidos 
                   FROM odontologos o
                   INNER JOIN usuarios u ON o.id_usuario = u.id_usuario

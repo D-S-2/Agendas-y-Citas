@@ -1,0 +1,74 @@
+body {
+    background-color: #555; /* Fondo oscuro para resaltar el papel en pantalla */
+    font-family: 'Courier New', Courier, monospace; /* Fuente tipo ticket */
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    margin: 0;
+}
+
+.ticket-container {
+    background: white;
+    width: 300px; /* Ancho típico de ticket */
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+.header, .footer {
+    text-align: center;
+}
+
+.header h2 { margin: 0; font-size: 1.2rem; }
+.header p { margin: 2px 0; font-size: 0.8rem; }
+.header hr { border: 1px dashed #000; margin: 10px 0; }
+
+.client-info {
+    margin: 15px 0;
+    font-size: 0.9rem;
+    border-bottom: 1px dashed #000;
+    padding-bottom: 10px;
+}
+
+.client-info p { margin: 3px 0; }
+
+.items-table {
+    width: 100%;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+
+.total-label { font-weight: bold; padding-top: 10px; border-top: 1px solid #000; }
+.total-amount { font-weight: bold; padding-top: 10px; border-top: 1px solid #000; font-size: 1.2rem; }
+
+/* BOTONES DE ACCIÓN (CSS) */
+.action-buttons {
+    margin-bottom: 20px;
+    text-align: center;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.btn-print {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 4px;
+}
+
+.btn-back {
+    display: inline-block;
+    margin-left: 10px;
+    color: #555;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+/* REGLAS MÁGICAS PARA IMPRESORA */
+@media print {
+    body { background: white; }
+    .ticket-container { box-shadow: none; width: 100%; }
+    .no-print { display: none !important; } /* Oculta los botones al imprimir */
+}

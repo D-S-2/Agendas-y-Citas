@@ -1,103 +1,215 @@
 <?php
-// views/citas/agenda_dia.php
+$page_title = "Agenda del Día";
+$page_css = "citas.css"; 
+
+require_once '../../includes/header.php';
+require_once '../../includes/sidebar.php';
 require_once '../../models/Cita.php';
 require_once '../../models/Odontologo.php';
 
 $citaModel = new Cita();
 $odoModel = new Odontologo();
+$doctores = $odoModel->listarTodos();
 
-// Obtener fecha y filtro de doctor si existen
+// Fecha y filtro
 $fecha = isset($_GET['fecha']) ? $_GET['fecha'] : date('Y-m-d');
 $id_odontologo = isset($_GET['id_odontologo']) && !empty($_GET['id_odontologo']) ? $_GET['id_odontologo'] : null;
 
+// Obtener citas
 $citas = $citaModel->obtenerCitasDelDia($fecha, $id_odontologo);
-$doctores = $odoModel->listarTodos();
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Agenda del Día</title>
-    <link rel="stylesheet" href="../../assets/css/global.css">
-    <link rel="stylesheet" href="../../assets/css/citas.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body style="background:#f4f6f9;">
-<main class="main-content" style="padding:20px;">
-    <div class="page-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+
+<main class="main-content">
+    <div class="page-header">
         <h1><i class="fas fa-calendar-day"></i> Agenda del Día</h1>
-        <div style="display:flex; gap:10px;">
-            <a href="calendario.php" class="btn-primary" style="background:#3498db; color:white; padding:10px 20px; text-decoration:none; border-radius:5px;"><i class="far fa-calendar-alt"></i> VER CALENDARIO</a>
-            <a href="nueva.php" class="btn-primary" style="background:#3498db; color:white; padding:10px 20px; text-decoration:none; border-radius:5px;"><i class="fas fa-plus"></i> NUEVA CITA</a>
+        
+        <div style="display: flex; gap: 10px;">
+            <a href="calendario.php" class="btn-primary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="far fa-calendar-alt"></i> Ver Calendario
+            </a>
+
+            <a href="nueva.php" class="btn-primary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-plus"></i> Nueva Cita
+            </a>
         </div>
     </div>
 
-    <div style="background:white; padding:20px; border-radius:8px; margin-bottom:20px; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
-        <form action="" method="GET" style="display:flex; gap:15px; align-items:flex-end; flex-wrap:wrap;">
-            <div style="flex:1; min-width:200px;">
-                <label style="display:block; margin-bottom:5px; font-weight:bold; color:#555;">Fecha:</label>
-                <input type="date" name="fecha" class="form-control" value="<?php echo $fecha; ?>" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:5px;">
+    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 20px;">
+        <form action="" method="GET" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+            <div class="form-group" style="flex: 1; min-width: 200px;">
+                <label>Fecha:</label>
+                <input type="date" name="fecha" class="form-control" value="<?php echo $fecha; ?>" required>
             </div>
-            <div style="flex:1; min-width:200px;">
-                <label style="display:block; margin-bottom:5px; font-weight:bold; color:#555;">Doctor:</label>
-                <select name="id_odontologo" class="form-control" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:5px;">
+            
+            <div class="form-group" style="flex: 1; min-width: 200px;">
+                <label>Doctor:</label>
+                <select name="id_odontologo" class="form-control">
                     <option value="">Todos los doctores</option>
                     <?php foreach($doctores as $d): ?>
-                        <option value="<?php echo $d['id_odontologo']; ?>" <?php echo ($id_odontologo == $d['id_odontologo']) ? 'selected' : ''; ?>>
+                        <option value="<?php echo $d['id_odontologo']; ?>" 
+                                <?php echo ($id_odontologo == $d['id_odontologo']) ? 'selected' : ''; ?>>
                             Dr. <?php echo $d['nombres'] . ' ' . $d['apellidos']; ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
             </div>
-            <button type="submit" class="btn-primary" style="background:#3498db; color:white; border:none; padding:10px 25px; border-radius:5px; cursor:pointer; height:40px;">
-                <i class="fas fa-search"></i> BUSCAR
+            
+            <button type="submit" class="btn-primary" style="height: 42px;">
+                <i class="fas fa-search"></i> Buscar
             </button>
         </form>
     </div>
 
-    <div style="background:white; border-radius:8px; overflow:hidden; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
-        <div style="background:#34495e; color:white; padding:15px; display:flex; justify-content:space-between; align-items:center;">
-            <h3 style="margin:0;"><i class="far fa-clock"></i> Citas Programadas</h3>
-            <span style="background:rgba(255,255,255,0.2); padding:2px 12px; border-radius:20px; font-size:0.9rem;">
-                <?php echo count($citas); ?> Cita(s)
+    <div style="background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); overflow: hidden;">
+        <div style="background: #34495e; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0;">
+                <i class="far fa-clock"></i> 
+                <?php 
+                    setlocale(LC_TIME, 'es_ES.UTF-8', 'es_ES', 'Spanish_Spain');
+                    echo strftime('%A, %d de %B de %Y', strtotime($fecha)); 
+                ?>
+            </h3>
+            <span style="background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px;">
+                <?php echo count($citas); ?> cita<?php echo count($citas) != 1 ? 's' : ''; ?>
             </span>
         </div>
 
         <?php if(empty($citas)): ?>
-            <div style="padding:60px; text-align:center; color:#999;">
-                <i class="far fa-calendar-times" style="font-size:3rem; margin-bottom:15px; opacity:0.3;"></i>
-                <p>No hay citas programadas para este día.</p>
+            <div style="padding: 60px 20px; text-align: center; color: #999;">
+                <i class="far fa-calendar-times" style="font-size: 4rem; margin-bottom: 15px; opacity: 0.3;"></i>
+                <p style="font-size: 1.1rem;">No hay citas programadas para este día</p>
             </div>
         <?php else: ?>
-            <div class="agenda-lista">
-                <?php foreach($citas as $c): ?>
-                    <div style="padding:20px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
-                        <div style="display:flex; gap:20px; align-items:center;">
-                            <div style="text-align:center; min-width:80px; border-right:2px solid #3498db; padding-right:15px;">
-                                <span style="font-size:1.2rem; font-weight:bold; color:#2c3e50;"><?php echo date('H:i', strtotime($c['fecha_hora_inicio'])); ?></span>
-                            </div>
-                            <div>
-                                <h4 style="margin:0; color:#2c3e50;"><?php echo $c['paciente']; ?></h4>
-                                <p style="margin:5px 0 0; font-size:0.9rem; color:#666;">
-                                    <i class="fas fa-stethoscope"></i> Dr. <?php echo $c['odontologo']; ?> | 
-                                    <i class="fas fa-comment-medical"></i> <?php echo $c['motivo']; ?>
-                                </p>
-                            </div>
+            <div style="padding: 0;">
+                <?php foreach($citas as $c): 
+                    $hora_inicio = date('H:i', strtotime($c['fecha_hora_inicio']));
+                    $hora_fin = date('H:i', strtotime($c['fecha_hora_fin']));
+                    
+                    // Colores según estado
+                    $color_borde = '#3498db'; // PROGRAMADA
+                    $color_fondo = '#e3f2fd';
+                    $icono_estado = 'fa-clock';
+                    
+                    if($c['estado'] == 'ATENDIDA') {
+                        $color_borde = '#2ecc71';
+                        $color_fondo = '#e8f5e9';
+                        $icono_estado = 'fa-check-circle';
+                    } elseif($c['estado'] == 'CANCELADA') {
+                        $color_borde = '#e74c3c';
+                        $color_fondo = '#ffebee';
+                        $icono_estado = 'fa-ban';
+                    } elseif($c['estado'] == 'NO_ASISTIO') {
+                        $color_borde = '#95a5a6';
+                        $color_fondo = '#f5f5f5';
+                        $icono_estado = 'fa-user-times';
+                    }
+                ?>
+                <div style="border-left: 5px solid <?php echo $color_borde; ?>; 
+                            background: <?php echo $color_fondo; ?>; 
+                            padding: 20px; 
+                            margin: 0; 
+                            border-bottom: 1px solid #eee;
+                            display: flex;
+                            gap: 20px;
+                            align-items: center;">
+                    
+                    <div style="min-width: 100px; text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: <?php echo $color_borde; ?>;">
+                            <?php echo $hora_inicio; ?>
                         </div>
-                        <span style="background:#3498db; color:white; padding:5px 15px; border-radius:20px; font-size:0.8rem; font-weight:bold;">
+                        <div style="font-size: 0.8rem; color: #666;">
+                            <?php echo $hora_fin; ?>
+                        </div>
+                    </div>
+
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                            <h4 style="margin: 0; font-size: 1.1rem; color: #2c3e50;">
+                                <?php echo $c['paciente']; ?>
+                            </h4>
+                            <span style="background: white; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; color: #666;">
+                                CI: <?php echo $c['ci']; ?>
+                            </span>
+                        </div>
+                        
+                        <p style="margin: 5px 0; color: #555; font-size: 0.9rem;">
+                            <i class="fas fa-stethoscope"></i> <strong><?php echo $c['odontologo']; ?></strong>
+                        </p>
+                        
+                        <p style="margin: 5px 0; color: #666; font-size: 0.9rem;">
+                            <i class="fas fa-comment-medical"></i> <?php echo $c['motivo']; ?>
+                        </p>
+                        
+                        <?php if($c['telefono']): ?>
+                        <p style="margin: 5px 0; color: #666; font-size: 0.85rem;">
+                            <i class="fas fa-phone"></i> <?php echo $c['telefono']; ?>
+                        </p>
+                        <?php endif; ?>
+                    </div>
+
+                    <div style="text-align: right; display: flex; flex-direction: column; gap: 8px; align-items: flex-end;">
+                        <span style="background: <?php echo $color_borde; ?>; 
+                                     color: white; 
+                                     padding: 5px 15px; 
+                                     border-radius: 20px; 
+                                     font-size: 0.85rem;
+                                     display: inline-flex;
+                                     align-items: center;
+                                     gap: 5px;">
+                            <i class="fas <?php echo $icono_estado; ?>"></i>
                             <?php echo $c['estado']; ?>
                         </span>
+                        
+                        <div style="display: flex; gap: 5px;">
+                            <?php if($c['estado'] == 'PROGRAMADA'): ?>
+                                <a href="atender.php?id_cita=<?php echo $c['id_cita']; ?>" 
+                                   class="btn-primary" 
+                                   style="padding: 6px 12px; font-size: 0.85rem; text-decoration: none;">
+                                    <i class="fas fa-user-md"></i> Atender
+                                </a>
+                            <?php endif; ?>
+                            
+                            <a href="../pacientes/historia.php?buscar_ci=<?php echo $c['ci']; ?>" 
+                               target="_blank"
+                               style="background: #34495e; 
+                                      color: white; 
+                                      padding: 6px 12px; 
+                                      border-radius: 4px; 
+                                      font-size: 0.85rem;
+                                      text-decoration: none;
+                                      display: inline-flex;
+                                      align-items: center;
+                                      gap: 5px;">
+                                <i class="fas fa-file-medical"></i> Historial
+                            </a>
+                        </div>
                     </div>
+                </div>
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
     </div>
 
-    <div style="text-align:center; margin-top:20px;">
-        <button onclick="window.print()" style="background:#7f8c8d; color:white; border:none; padding:12px 30px; border-radius:5px; cursor:pointer; font-weight:bold;">
-            <i class="fas fa-print"></i> IMPRIMIR AGENDA
+    <div style="margin-top: 20px; text-align: center;">
+        <button onclick="window.print()" style="background: #7f8c8d; color: white; border: none; padding: 10px 25px; border-radius: 5px; cursor: pointer; font-size: 0.95rem;">
+            <i class="fas fa-print"></i> Imprimir Agenda
         </button>
     </div>
 </main>
-</body>
-</html>
+
+<style>
+@media print {
+    .sidebar, .top-bar, .btn-primary, button, .page-header a { 
+        display: none !important; 
+    }
+    .main-content { 
+        padding: 0; 
+        background: white; 
+    }
+    body { 
+        background: white; 
+    }
+}
+</style>
+
+<?php require_once '../../includes/footer.php'; ?>

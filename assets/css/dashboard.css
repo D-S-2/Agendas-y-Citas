@@ -1,0 +1,98 @@
+/* Layout Principal */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* Barra Superior */
+.top-bar {
+    background-color: #2c3e50;
+    color: white;
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.user-area .btn-logout {
+    color: #e74c3c;
+    text-decoration: none;
+    margin-left: 15px;
+    font-weight: bold;
+}
+
+/* Contenedor Inferior (Sidebar + Contenido) */
+.main-layout {
+    display: flex;
+    flex: 1; /* Ocupa el resto de la altura */
+    overflow: hidden;
+}
+
+/* Sidebar (Menú Lateral) */
+.sidebar {
+    width: 250px;
+    background-color: #34495e;
+    color: white;
+    overflow-y: auto;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding-top: 20px;
+}
+
+.sidebar a {
+    display: block;
+    padding: 15px 20px;
+    color: #ecf0f1;
+    text-decoration: none;
+    transition: 0.3s;
+    border-left: 4px solid transparent;
+}
+
+.sidebar a:hover {
+    background-color: #2c3e50;
+    border-left-color: #3498db;
+}
+
+.menu-title {
+    padding: 10px 20px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #95a5a6;
+    margin-top: 10px;
+}
+
+/* Área de Contenido Principal */
+.main-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #f4f6f9;
+}
+
+/* Tarjetas de Resumen (Dashboard Cards) */
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    border-left: 5px solid #3498db;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card h3 { font-size: 2rem; margin-bottom: 5px; color: #2c3e50; }
+.card p { color: #7f8c8d; margin: 0; }
+.card i { font-size: 2.5rem; color: #bdc3c7; }

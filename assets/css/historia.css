@@ -1,0 +1,109 @@
+/* Buscador */
+.search-box {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    align-items: center;
+}
+
+.search-input {
+    flex: 1;
+    padding: 10px;
+    font-size: 1.1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+/* Tarjeta de Datos del Paciente */
+.patient-card {
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.patient-card h2 { margin: 0; font-size: 1.5rem; }
+.patient-card p { margin: 5px 0 0; opacity: 0.9; }
+
+/* LÍNEA DE TIEMPO (TIMELINE) */
+.timeline {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* La línea vertical central */
+.timeline::after {
+    content: '';
+    position: absolute;
+    width: 4px;
+    background-color: #ddd;
+    top: 0;
+    bottom: 0;
+    left: 20px; /* Alineado a la izquierda */
+    margin-left: -2px;
+}
+
+.timeline-item {
+    position: relative;
+    background-color: white;
+    margin-left: 50px; /* Espacio para la línea */
+    margin-bottom: 30px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    border-left: 5px solid #3498db; /* Color por defecto */
+}
+
+/* El círculo en la línea */
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    left: -42px; /* Ubicación sobre la línea vertical */
+    background-color: white;
+    border: 4px solid #3498db;
+    top: 15px;
+    border-radius: 50%;
+    z-index: 1;
+}
+
+.timeline-date {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.timeline-doctor {
+    font-size: 0.9rem;
+    color: #34495e;
+    font-style: italic;
+    margin-bottom: 10px;
+}
+
+.timeline-diag {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.timeline-treatments {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed #eee;
+    color: #27ae60;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
