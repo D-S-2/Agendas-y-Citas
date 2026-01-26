@@ -2,8 +2,9 @@
 require_once __DIR__ . '/../models/Cita.php';
 $citaModel = new Cita();
 
+// API para cargar eventos en el calendario con colores
 if (isset($_GET['accion']) && $_GET['accion'] == 'listar') {
-    $id_filtro = isset($_GET['id_odontologo']) ? $_GET['id_odontologo'] : null;
+    $id_filtro = isset($_GET['id_odontologo']) && !empty($_GET['id_odontologo']) ? $_GET['id_odontologo'] : null;
     $citas = $citaModel->listarParaCalendario($id_filtro);
     
     $eventos = [];
@@ -11,6 +12,7 @@ if (isset($_GET['accion']) && $_GET['accion'] == 'listar') {
         $color = '#3498db'; // Azul (PROGRAMADA)
         if($cita['estado'] == 'ATENDIDA') $color = '#2ecc71'; // Verde
         if($cita['estado'] == 'CANCELADA') $color = '#e74c3c'; // Rojo
+        if($cita['estado'] == 'NO_ASISTIO') $color = '#95a5a6'; // Gris
 
         $eventos[] = [
             'id' => $cita['id_cita'],
@@ -25,6 +27,7 @@ if (isset($_GET['accion']) && $_GET['accion'] == 'listar') {
     exit;
 }
 
+// Guardar nueva cita
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $inicio = $_POST['fecha'] . ' ' . $_POST['hora'];
     $fin = date('Y-m-d H:i:s', strtotime($inicio . " +30 minutes"));
@@ -34,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         'inicio' => $inicio,
         'fin' => $fin,
         'motivo' => $_POST['motivo'],
-        'id_usuario' => 1 
+        'id_usuario' => 1 // ID por defecto
     ];
     $citaModel->crear($datos);
     header("Location: ../views/citas/calendario.php?ok=creado");
