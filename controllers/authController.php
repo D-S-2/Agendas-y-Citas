@@ -24,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['rol'] = $datosUsuario['rol_nombre']; // 'ADMIN', 'DOCTOR', etc.
             
             // Redirigir al Dashboard (lo crearemos luego)
-            header("Location: ../views/admin/dashboard.php");
+            header("Location: ../views/citas/calendario.php");
             exit;
         } else {
             // Contraseña incorrecta

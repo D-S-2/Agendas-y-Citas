@@ -53,34 +53,40 @@ class Cita {
     }
 
     // VERIFICAR DISPONIBILIDAD DEL HORARIO
-    public function verificarDisponibilidad($id_odontologo, $inicio, $fin, $id_cita_excluir = null) {
-        $sql = "SELECT COUNT(*) as total FROM " . $this->table . " 
-                WHERE id_odontologo = :odo 
-                AND estado IN ('PROGRAMADA', 'ATENDIDA')
-                AND (
-                    (fecha_hora_inicio < :fin AND fecha_hora_fin > :inicio)
-                )";
-        
-        // Si estamos editando, excluir la cita actual
-        if ($id_cita_excluir) {
-            $sql .= " AND id_cita != :exc";
-        }
-        
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(":odo", $id_odontologo, PDO::PARAM_INT);
-        $stmt->bindParam(":inicio", $inicio);
-        $stmt->bindParam(":fin", $fin);
-        
-        if ($id_cita_excluir) {
-            $stmt->bindParam(":exc", $id_cita_excluir, PDO::PARAM_INT);
-        }
-
-        $stmt->execute();
-        $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        // Retorna true si está disponible (total = 0)
-        return ($resultado['total'] == 0); 
+    public function verificarDisponibilidad($id_odontologo, $id_paciente, $inicio, $fin, $id_cita_excluir = null) {
+    $sql = "SELECT COUNT(*) as total FROM " . $this->table . " 
+            WHERE estado IN ('PROGRAMADA', 'ATENDIDA')
+            AND (
+                -- Caso A: El doctor ya tiene una cita en este rango
+                (id_odontologo = :odo AND (fecha_hora_inicio < :fin AND fecha_hora_fin > :inicio))
+                OR 
+                -- Caso B: El paciente ya tiene una cita en este rango (con cualquier doctor)
+                (id_paciente = :pac AND (fecha_hora_inicio < :fin AND fecha_hora_fin > :inicio))
+                OR
+                -- Caso C: Restricción Global (No permitir dos citas simultáneas en el sistema)
+                (fecha_hora_inicio < :fin AND fecha_hora_fin > :inicio)
+            )";
+    
+    if ($id_cita_excluir) {
+        $sql .= " AND id_cita != :exc";
     }
+    
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindParam(":odo", $id_odontologo, PDO::PARAM_INT);
+    $stmt->bindParam(":pac", $id_paciente, PDO::PARAM_INT);
+    $stmt->bindParam(":inicio", $inicio);
+    $stmt->bindParam(":fin", $fin);
+    
+    if ($id_cita_excluir) {
+        $stmt->bindParam(":exc", $id_cita_excluir, PDO::PARAM_INT);
+    }
+
+    $stmt->execute();
+    $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    // Si el total es 0, el horario está libre
+    return ($resultado['total'] == 0); 
+}
 
     // CREAR NUEVA CITA
     public function crear($datos) {

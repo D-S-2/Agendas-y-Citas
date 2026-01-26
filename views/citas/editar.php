@@ -1,7 +1,7 @@
 <?php
 // views/citas/editar.php
 $page_title = "Modificar Cita";
-$page_css = "citas.css"; 
+$page_css = "citas.css";
 
 require_once '../../includes/header.php';
 require_once '../../includes/sidebar.php';
@@ -47,18 +47,21 @@ $doctores = $odoModel->listarTodos();
         display: flex;
         align-items: center;
     }
+
     .select2-container--default .select2-selection--single .select2-selection__arrow {
         height: 40px !important;
     }
-    
+
     /* Estilos del Formulario Clínico */
     .clinical-form {
         background: white;
         padding: 40px;
         border-radius: 10px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-        border-top: 6px solid #f39c12; /* Color Naranja indicando Edición */
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        border-top: 6px solid #f39c12;
+        /* Color Naranja indicando Edición */
     }
+
     .section-title {
         color: #2c3e50;
         border-bottom: 2px solid #f0f2f5;
@@ -79,34 +82,34 @@ $doctores = $odoModel->listarTodos();
     </div>
 
     <div style="max-width: 900px; margin: 0 auto;">
-        
+
         <form action="../../controllers/citaController.php" method="POST" class="clinical-form">
             <input type="hidden" name="id_cita" value="<?php echo $cita['id_cita']; ?>">
 
-            <?php 
-                // Definimos el color según el estado
-                $estado = $cita['estado'];
-                $color_fondo = '#3498db'; // Azul (PROGRAMADA) por defecto
-                
-                if($estado == 'ATENDIDA') {
-                    $color_fondo = '#2ecc71'; // Verde
-                } elseif($estado == 'CANCELADA') {
-                    $color_fondo = '#e74c3c'; // Rojo
-                } elseif($estado == 'NO_ASISTIO') {
-                    $color_fondo = '#95a5a6'; // Gris
-                }
+            <?php
+            // Definimos el color según el estado
+            $estado = $cita['estado'];
+            $color_fondo = '#3498db'; // Azul (PROGRAMADA) por defecto
+
+            if ($estado == 'ATENDIDA') {
+                $color_fondo = '#2ecc71'; // Verde
+            } elseif ($estado == 'CANCELADA') {
+                $color_fondo = '#e74c3c'; // Rojo
+            } elseif ($estado == 'NO_ASISTIO') {
+                $color_fondo = '#95a5a6'; // Gris
+            }
             ?>
             <div style="background-color: <?php echo $color_fondo; ?>; color: white; padding: 15px; border-radius: 8px; margin-bottom: 25px; text-align: center; font-size: 1.2rem; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); letter-spacing: 1px;">
                 <i class="fas fa-info-circle"></i> ESTADO DE LA CITA: <?php echo $estado; ?>
             </div>
 
             <h3 class="section-title"><i class="fas fa-user-injured"></i> Paciente</h3>
-            
+
             <div class="form-group">
                 <label style="font-weight: bold;">Paciente:</label>
                 <select name="id_paciente" class="form-control select2" required style="width: 100%;">
-                    <?php foreach($pacientes as $p): ?>
-                        <option value="<?php echo $p['id_paciente']; ?>" 
+                    <?php foreach ($pacientes as $p): ?>
+                        <option value="<?php echo $p['id_paciente']; ?>"
                             <?php echo ($p['id_paciente'] == $cita['id_paciente']) ? 'selected' : ''; ?>>
                             <?php echo $p['ci'] . ' - ' . $p['nombres'] . ' ' . $p['apellido_paterno']; ?>
                         </option>
@@ -123,10 +126,10 @@ $doctores = $odoModel->listarTodos();
                     <div class="form-group">
                         <label style="font-weight: bold;">Odontólogo:</label>
                         <select name="id_odontologo" class="form-control select2" required style="width: 100%;">
-                            <?php foreach($doctores as $d): ?>
+                            <?php foreach ($doctores as $d): ?>
                                 <option value="<?php echo $d['id_odontologo']; ?>"
                                     <?php echo ($d['id_odontologo'] == $cita['id_odontologo']) ? 'selected' : ''; ?>>
-                                    Dr. <?php echo $d['nombres'] . ' ' . $d['apellidos']; ?> 
+                                    Dr. <?php echo $d['nombres'] . ' ' . $d['apellidos']; ?>
                                     (<?php echo $d['especialidad'] ? $d['especialidad'] : 'General'; ?>)
                                 </option>
                             <?php endforeach; ?>
@@ -142,47 +145,47 @@ $doctores = $odoModel->listarTodos();
                 <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
                     <div class="form-group">
                         <label style="font-weight: bold; color: #f39c12;">Fecha:</label>
-                        <input type="date" name="fecha" required class="form-control" 
-                               value="<?php echo $fecha_actual; ?>"
-                               style="height: 45px;">
+                        <input type="date" name="fecha" required class="form-control"
+                            value="<?php echo $fecha_actual; ?>"
+                            style="height: 45px;">
                     </div>
 
                     <div class="form-group" style="margin-top: 20px;">
                         <label style="font-weight: bold; color: #f39c12;">Hora:</label>
-                        <input type="time" name="hora" required class="form-control" 
-                               value="<?php echo $hora_actual; ?>" step="1800"
-                               style="height: 45px;">
+                        <input type="time" name="hora" required class="form-control"
+                            value="<?php echo $hora_actual; ?>" step="1800"
+                            style="height: 45px;">
                     </div>
                 </div>
             </div>
 
             <div style="margin-top: 40px; border-top: 2px solid #eee; padding-top: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
-                
+
                 <div>
-                    <?php if($cita['estado'] == 'PROGRAMADA'): ?>
-                    <button type="button" onclick="cancelarCita(<?php echo $id_cita; ?>)" style="background-color: #e74c3c; color: white; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s;">
-                        <i class="fas fa-ban"></i> Cancelar Cita
-                    </button>
+                    <?php if ($cita['estado'] == 'PROGRAMADA'): ?>
+                        <button type="button" onclick="cancelarCita(<?php echo $id_cita; ?>)" style="background-color: #e74c3c; color: white; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s;">
+                            <i class="fas fa-ban"></i> Cancelar Cita
+                        </button>
                     <?php endif; ?>
                 </div>
 
                 <div style="display: flex; gap: 10px; align-items: center;">
-                    
-                    <a href="../pacientes/historia.php?buscar_ci=<?php echo $cita['ci']; ?>" target="_blank" 
-                       style="background-color: #34495e; color: white; text-decoration: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px;">
-                        <i class="fas fa-file-medical"></i> Historial
-                    </a>
 
-                    <?php if($cita['estado'] == 'PROGRAMADA'): ?>
-                    <a href="atender.php?id_cita=<?php echo $id_cita; ?>" 
-                       style="background-color: #2ecc71; color: white; text-decoration: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px;">
-                        <i class="fas fa-user-md"></i> Atender
-                    </a>
+                    <span style="background-color: #34495e; color: white; padding: 12px 20px; border-radius: 6px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; cursor: default; opacity: 0.8;">
+                        <i class="fas fa-file-medical"></i> Historial
+                    </span>
+
+                    <?php if ($cita['estado'] == 'PROGRAMADA'): ?>
+                        <span style="background-color: #2ecc71; color: white; padding: 12px 20px; border-radius: 6px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; cursor: default; opacity: 0.8;">
+                            <i class="fas fa-user-md"></i> Atender
+                        </span>
                     <?php endif; ?>
 
-                    <button type="submit" class="btn-primary" style="background-color: #f39c12; border:none; padding: 12px 30px; font-size: 1.1rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px;">
-                        <i class="fas fa-save"></i> Guardar
-                    </button>
+                    <?php if ($cita['estado'] == 'PROGRAMADA'): ?>
+                        <button type="submit" class="btn-primary" style="background-color: #f39c12; border:none; padding: 12px 30px; font-size: 1.1rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-save"></i> Guardar
+                        </button>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -197,31 +200,36 @@ $doctores = $odoModel->listarTodos();
     $(document).ready(function() {
         // Inicializar Select2 en los desplegables
         $('.select2').select2({
-            language: { noResults: () => "No se encontraron resultados" }
+            language: {
+                noResults: () => "No se encontraron resultados"
+            }
         });
     });
 
     // Función para cancelar la cita vía AJAX
     function cancelarCita(id) {
-        if(confirm('¿Está seguro de CANCELAR esta cita? Esta acción no se puede deshacer.')) {
+        if (confirm('¿Está seguro de CANCELAR esta cita? Esta acción no se puede deshacer.')) {
             var formData = new FormData();
             formData.append('accion', 'cancelar');
             formData.append('id_cita', id);
 
-            fetch('../../controllers/citaController.php', { method: 'POST', body: formData })
-            .then(res => res.json())
-            .then(data => {
-                if(data.status === 'success') {
-                    // Si se cancela bien, volvemos al calendario con mensaje de éxito
-                    window.location.href = 'calendario.php?ok=cancelada';
-                } else {
-                    alert('Error al cancelar: ' + (data.message || 'Error desconocido'));
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                alert('Error de conexión al intentar cancelar.');
-            });
+            fetch('../../controllers/citaController.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Si se cancela bien, volvemos al calendario con mensaje de éxito
+                        window.location.href = 'calendario.php?ok=cancelada';
+                    } else {
+                        alert('Error al cancelar: ' + (data.message || 'Error desconocido'));
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Error de conexión al intentar cancelar.');
+                });
         }
     }
 </script>
