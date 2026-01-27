@@ -20,12 +20,12 @@
         <form action="../../controllers/authController.php" method="POST">
             <div class="form-group">
                 <label for="usuario">Usuario</label>
-                <input type="text" id="usuario" name="usuario" class="form-control" placeholder="Ej: admin" required>
+                <input type="text" id="usuario" name="usuario" class="form-control" placeholder="admin" required>
             </div>
 
             <div class="form-group">
                 <label for="password">Contraseña</label>
-                <input type="password" id="password" name="password" class="form-control" placeholder="******" required>
+                <input type="password" id="password" name="password" class="form-control" placeholder="123456" required>
             </div>
 
             <button type="submit" class="btn-login">Ingresar</button>

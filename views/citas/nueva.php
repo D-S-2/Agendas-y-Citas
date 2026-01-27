@@ -1,7 +1,7 @@
 <?php
 // views/citas/nueva.php
 $page_title = "Nueva Cita Médica";
-$page_css = "citas.css"; 
+$page_css = "citas.css";
 
 require_once '../../includes/header.php';
 require_once '../../includes/sidebar.php';
@@ -25,17 +25,20 @@ $doctores = $odoModel->listarTodos();
         display: flex;
         align-items: center;
     }
+
     .select2-container--default .select2-selection--single .select2-selection__arrow {
         height: 40px !important;
     }
+
     /* Estilo del formulario */
     .clinical-form {
         background: white;
         padding: 40px;
         border-radius: 10px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
         border-top: 6px solid #3498db;
     }
+
     .section-title {
         color: #2c3e50;
         border-bottom: 2px solid #f0f2f5;
@@ -45,16 +48,21 @@ $doctores = $odoModel->listarTodos();
         text-transform: uppercase;
         letter-spacing: 1px;
     }
+
     .quick-actions {
         margin-top: 5px;
         font-size: 0.85rem;
         text-align: right;
     }
+
     .quick-actions a {
         color: #3498db;
         text-decoration: none;
     }
-    .quick-actions a:hover { text-decoration: underline; }
+
+    .quick-actions a:hover {
+        text-decoration: underline;
+    }
 </style>
 
 <main class="main-content">
@@ -66,16 +74,16 @@ $doctores = $odoModel->listarTodos();
     </div>
 
     <div style="max-width: 900px; margin: 0 auto;">
-        
+
         <form action="../../controllers/citaController.php" method="POST" class="clinical-form">
-            
+
             <h3 class="section-title"><i class="fas fa-user-injured"></i> Información del Paciente</h3>
-            
+
             <div class="form-group">
                 <label style="font-weight: bold;">Buscar Paciente (Nombre o Cédula):</label>
                 <select name="id_paciente" class="form-control select2" required style="width: 100%;">
                     <option value="">Buscar paciente...</option>
-                    <?php foreach($pacientes as $p): ?>
+                    <?php foreach ($pacientes as $p): ?>
                         <option value="<?php echo $p['id_paciente']; ?>">
                             <?php echo $p['ci'] . ' - ' . $p['nombres'] . ' ' . $p['apellido_paterno'] . ' ' . $p['apellido_materno']; ?>
                         </option>
@@ -96,9 +104,9 @@ $doctores = $odoModel->listarTodos();
                         <label style="font-weight: bold;">Odontólogo Asignado:</label>
                         <select name="id_odontologo" class="form-control select2" required style="width: 100%;">
                             <option value="">Seleccione profesional...</option>
-                            <?php foreach($doctores as $d): ?>
+                            <?php foreach ($doctores as $d): ?>
                                 <option value="<?php echo $d['id_odontologo']; ?>">
-                                    Dr. <?php echo $d['nombres'] . ' ' . $d['apellidos']; ?> 
+                                    Dr. <?php echo $d['nombres'] . ' ' . $d['apellidos']; ?>
                                     (<?php echo $d['especialidad'] ? $d['especialidad'] : 'General'; ?>)
                                 </option>
                             <?php endforeach; ?>
@@ -107,28 +115,28 @@ $doctores = $odoModel->listarTodos();
 
                     <div class="form-group" style="margin-top: 20px;">
                         <label style="font-weight: bold;">Motivo de la visita:</label>
-                        <textarea name="motivo" class="form-control" rows="4" required 
-                                  placeholder="Ej: Dolor agudo en premolar superior derecho..."
-                                  style="resize: none; background: #f9f9f9;"></textarea>
+                        <textarea name="motivo" class="form-control" rows="4" required
+                            placeholder="Ej: Dolor agudo en premolar superior derecho..."
+                            style="resize: none; background: #f9f9f9;"></textarea>
                     </div>
                 </div>
 
                 <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
                     <div class="form-group">
                         <label style="font-weight: bold; color: #3498db;">Fecha de Cita:</label>
-                        <input type="date" name="fecha" required class="form-control" 
-                               min="<?php echo date('Y-m-d'); ?>" 
-                               value="<?php echo date('Y-m-d'); ?>"
-                               style="height: 45px;">
+                        <input type="date" name="fecha" required class="form-control"
+                            min="<?php echo date('Y-m-d'); ?>"
+                            value="<?php echo isset($_GET['fecha']) ? $_GET['fecha'] : date('Y-m-d'); ?>"
+                            style="height: 45px;">
                     </div>
 
                     <div class="form-group" style="margin-top: 20px;">
                         <label style="font-weight: bold; color: #3498db;">Hora Estimada:</label>
-                        <input type="time" name="hora" required class="form-control" 
-                               value="09:00" step="1800"
-                               style="height: 45px;">
+                        <input type="time" name="hora" required class="form-control"
+                            value="09:00" step="1800"
+                            style="height: 45px;">
                     </div>
-                    
+
                     <div style="margin-top: 20px; font-size: 0.85rem; color: #666; display: flex; align-items: center; gap: 10px;">
                         <i class="fas fa-info-circle"></i>
                         <span>Las citas tienen una duración estándar de 30 minutos por defecto.</span>
