@@ -60,16 +60,13 @@ class Cita
     public function verificarDisponibilidad($id_odontologo, $id_paciente, $inicio, $fin, $id_cita_excluir = null)
     {
         $sql = "SELECT COUNT(*) as total FROM " . $this->table . " 
-            WHERE estado NOT IN ('CANCELADA')  -- CAMBIO AQUÍ: Excluir canceladas en vez de incluir solo programadas
+            WHERE estado NOT IN ('CANCELADA') 
             AND (
                 -- Caso A: El doctor ya tiene una cita en este rango
                 (id_odontologo = :odo AND (fecha_hora_inicio < :fin AND fecha_hora_fin > :inicio))
                 OR 
                 -- Caso B: El paciente ya tiene una cita en este rango (con cualquier doctor)
                 (id_paciente = :pac AND (fecha_hora_inicio < :fin AND fecha_hora_fin > :inicio))
-                OR
-                -- Caso C: Restricción Global (No permitir dos citas simultáneas en el sistema)
-                (fecha_hora_inicio < :fin AND fecha_hora_fin > :inicio)
             )";
 
         if ($id_cita_excluir) {
@@ -155,15 +152,12 @@ class Cita
         return $stmt->execute();
     }
 
-    // CANCELAR CITA (MEJORADO - Registra quién cancela)
+    // CANCELAR CITA
     public function cancelar($id_cita, $id_usuario = null)
     {
-        // Solo cancelar si está PROGRAMADA
         $query = "UPDATE " . $this->table . " 
                   SET estado = 'CANCELADA'";
 
-        // Si tenemos el usuario que cancela, lo registramos en creada_por
-        // (Esto es temporal, idealmente tendrías un campo cancelada_por)
         if ($id_usuario) {
             $query .= ", creada_por = :usuario";
         }
@@ -193,7 +187,7 @@ class Cita
         return $stmt->execute();
     }
 
-    // OBTENER CITAS DEL DÍA (Para vista de agenda diaria)
+    // OBTENER CITAS DEL DÍA
     public function obtenerCitasDelDia($fecha, $id_odontologo = null)
     {
         $sql = "SELECT 
@@ -228,17 +222,5 @@ class Cita
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-    // ANULAR CITAS VENCIDAS (Proceso automático opcional)
-    public function anularVencidas()
-    {
-        // Marcar como NO_ASISTIO las citas programadas que pasaron más de 2 horas
-        $sql = "UPDATE citas 
-                SET estado = 'NO_ASISTIO' 
-                WHERE estado = 'PROGRAMADA' 
-                AND fecha_hora_fin < DATE_SUB(NOW(), INTERVAL 2 HOUR)";
-
-        $stmt = $this->conn->prepare($sql);
-        return $stmt->execute();
-    }
 }
+?>
