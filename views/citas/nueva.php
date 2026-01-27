@@ -1,5 +1,4 @@
 <?php
-// views/citas/nueva.php
 $page_title = "Nueva Cita Médica";
 $page_css = "citas.css";
 
@@ -8,7 +7,7 @@ require_once '../../includes/sidebar.php';
 require_once '../../models/Paciente.php';
 require_once '../../models/Odontologo.php';
 
-// 1. Cargamos datos
+// Cargar datos
 $pacienteModel = new Paciente();
 $pacientes = $pacienteModel->listarTodos();
 
@@ -18,7 +17,7 @@ $doctores = $odoModel->listarTodos();
 
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <style>
-    /* Ajustes visuales para Select2 para que combine con tu diseño */
+    /* Ajustes visuales para Select2 */
     .select2-container .select2-selection--single {
         height: 45px !important;
         border: 1px solid #ddd !important;
@@ -49,31 +48,31 @@ $doctores = $odoModel->listarTodos();
         letter-spacing: 1px;
     }
 
-    .quick-actions {
-        margin-top: 5px;
-        font-size: 0.85rem;
-        text-align: right;
-    }
-
-    .quick-actions a {
-        color: #3498db;
-        text-decoration: none;
-    }
-
-    .quick-actions a:hover {
-        text-decoration: underline;
+    .info-box {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 12px 15px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        color: #856404;
     }
 </style>
 
 <main class="main-content">
     <div class="page-header">
-        <h1><i class="fas fa-calendar-plus"></i> Gestión de Citas</h1>
+        <h1><i class="fas fa-calendar-plus"></i> Nueva Cita</h1>
         <a href="calendario.php" class="btn-primary" style="background-color: #7f8c8d;">
             <i class="fas fa-arrow-left"></i> Volver al Calendario
         </a>
     </div>
 
     <div style="max-width: 900px; margin: 0 auto;">
+
+        <div class="info-box">
+            <i class="fas fa-info-circle"></i> 
+            <strong>Importante:</strong> Si no encuentras al paciente en la lista, debes agregarlo primero en la base de datos mediante SQL.
+        </div>
 
         <form action="../../controllers/citaController.php" method="POST" class="clinical-form">
 
@@ -89,8 +88,9 @@ $doctores = $odoModel->listarTodos();
                         </option>
                     <?php endforeach; ?>
                 </select>
-                <div class="quick-actions">
-                    ¿No encuentras al paciente? <a href="../pacientes/formulario.php" target="_blank"><i class="fas fa-plus-circle"></i> Registrar Nuevo Paciente</a>
+                <div style="margin-top: 8px; font-size: 0.85rem; color: #666;">
+                    <i class="fas fa-search"></i> 
+                    Escribe el nombre o CI del paciente para buscar rápidamente
                 </div>
             </div>
 
@@ -139,7 +139,7 @@ $doctores = $odoModel->listarTodos();
 
                     <div style="margin-top: 20px; font-size: 0.85rem; color: #666; display: flex; align-items: center; gap: 10px;">
                         <i class="fas fa-info-circle"></i>
-                        <span>Las citas tienen una duración estándar de 30 minutos por defecto.</span>
+                        <span>Las citas tienen una duración estándar de 30 minutos.</span>
                     </div>
                 </div>
             </div>

@@ -4,11 +4,8 @@ $page_css = "citas.css";
 
 require_once '../../includes/header.php';
 require_once '../../includes/sidebar.php';
-require_once '../../models/Paciente.php';
 require_once '../../models/Odontologo.php';
 
-$pacienteModel = new Paciente();
-$pacientes = $pacienteModel->listarTodos();
 $odoModel = new Odontologo();
 $doctores = $odoModel->listarTodos();
 ?>
