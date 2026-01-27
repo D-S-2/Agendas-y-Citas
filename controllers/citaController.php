@@ -103,6 +103,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['accion'])) {
     $duracion = 30; // Duración fija de 30 minutos
     $fin = date('Y-m-d H:i:s', strtotime($inicio . " +$duracion minutes"));
     $id_odontologo = $_POST['id_odontologo'];
+    $id_paciente = $_POST['id_paciente']; // ← AGREGAR ESTA LÍNEA
 
     $id_cita = isset($_POST['id_cita']) && !empty($_POST['id_cita']) ? $_POST['id_cita'] : null;
 
