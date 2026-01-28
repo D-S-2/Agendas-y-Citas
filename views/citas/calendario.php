@@ -87,6 +87,14 @@ $doctores = $odoModel->listarTodos();
             initialView: 'dayGridMonth',
             locale: 'es',
             height: '100%',
+            
+            // ============================================
+            // CONFIGURACIÓN VISUAL PARA CITAS CORTAS
+            // ============================================
+            eventMinHeight: 50,      // Mismo valor que en CSS (min-height)
+            slotEventOverlap: false, // Evita que se solapen totalmente
+            // ============================================
+
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
