@@ -4,29 +4,25 @@ require_once __DIR__ . '/../models/Cita.php';
 
 $citaModel = new Cita();
 
-// --- API JSON ---
+// ==========================================
+// 1. API JSON (Para que funcione el Calendario)
+// ==========================================
 
-// 1. Listar (Con filtro de doctor opcional)
+// Listar eventos para FullCalendar
 if (isset($_GET['accion']) && $_GET['accion'] == 'listar') {
-
-    // Filtrar por doctor si se especifica
-    $id_filtro = isset($_GET['id_odontologo']) && !empty($_GET['id_odontologo'])
-        ? $_GET['id_odontologo']
-        : null;
-
+    $id_filtro = isset($_GET['id_odontologo']) && !empty($_GET['id_odontologo']) ? $_GET['id_odontologo'] : null;
     $citas = $citaModel->listarParaCalendario($id_filtro);
 
     $eventos = [];
     foreach ($citas as $cita) {
-        // Colores según estado
-        $color = '#3498db'; // Azul (PROGRAMADA)
+        $color = '#3498db'; // Azul (Programada)
         if ($cita['estado'] == 'ATENDIDA') $color = '#2ecc71'; // Verde
         if ($cita['estado'] == 'CANCELADA') $color = '#e74c3c'; // Rojo
         if ($cita['estado'] == 'NO_ASISTIO') $color = '#95a5a6'; // Gris
 
         $eventos[] = [
             'id' => $cita['id_cita'],
-            'title' => $cita['title'],
+            'title' => $cita['title'] . " (" . $cita['estado'] . ")", // Muestra estado en el calendario
             'start' => $cita['start'],
             'end' => $cita['end'],
             'color' => $color,
@@ -36,85 +32,94 @@ if (isset($_GET['accion']) && $_GET['accion'] == 'listar') {
             ]
         ];
     }
-
     header('Content-Type: application/json');
     echo json_encode($eventos);
     exit;
 }
 
-// 2. Obtener UNA cita
-if (isset($_GET['accion']) && $_GET['accion'] == 'obtener') {
-    $id = $_GET['id'];
-    $cita = $citaModel->obtenerPorId($id);
-
-    header('Content-Type: application/json');
-    echo json_encode($cita);
-    exit;
-}
-
-// 3. Mover Cita (Drag & Drop)
+// Mover cita (Drag & Drop en el calendario)
 if (isset($_POST['accion']) && $_POST['accion'] == 'mover') {
     $id = $_POST['id_cita'];
     $inicio = $_POST['start'];
     $fin = $_POST['end'];
 
-    // Obtener datos de la cita para verificar disponibilidad
+    // Verificar disponibilidad antes de mover
     $citaOriginal = $citaModel->obtenerPorId($id);
-
-    // Verificar que el horario esté disponible
-    if ($citaModel->verificarDisponibilidad($citaOriginal['id_odontologo'], $inicio, $fin, $id)) {
+    if ($citaModel->verificarDisponibilidad($citaOriginal['id_odontologo'], $citaOriginal['id_paciente'], $inicio, $fin, $id)) {
         if ($citaModel->mover($id, $inicio, $fin)) {
             echo json_encode(['status' => 'success']);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Error al actualizar']);
+            echo json_encode(['status' => 'error', 'message' => 'No se puede mover una cita que no está PROGRAMADA.']);
         }
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'Horario ocupado']);
+        echo json_encode(['status' => 'error', 'message' => 'Horario ocupado.']);
     }
     exit;
 }
 
-// 4. Cancelar Cita (MEJORADO - Ahora registra quién cancela)
-if (isset($_POST['accion']) && $_POST['accion'] == 'cancelar') {
-    $id = $_POST['id_cita'];
-    $id_usuario = $_SESSION['id_usuario']; // Usuario que cancela
+// ==========================================
+// 2. ACCIONES DE ESTADO (Botones)
+// ==========================================
 
-    if ($citaModel->cancelar($id, $id_usuario)) {
-        echo json_encode(['status' => 'success']);
+if (isset($_GET['accion'])) {
+    $id_cita = $_GET['id'];
+    $resultado = false;
+    $msg = "error";
+
+    // Cancelar Cita
+    if ($_GET['accion'] == 'cancelar') {
+        $resultado = $citaModel->cancelar($id_cita, $_SESSION['id_usuario']);
+        $msg = "cancelada"; // Mensaje para la alerta verde
+    } 
+    // Marcar como No Asistió
+    elseif ($_GET['accion'] == 'no_asistio') {
+        $resultado = $citaModel->marcarNoAsistio($id_cita);
+        $msg = "editado";
+    }
+
+    if ($resultado) {
+        header("Location: ../views/citas/calendario.php?ok=" . $msg);
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'Error al cancelar']);
+        header("Location: ../views/citas/calendario.php?error=1");
     }
     exit;
 }
 
-// --- FORMULARIO POST (Crear/Editar) ---
+// ==========================================
+// 3. GUARDAR CITA (Crear o Editar con Horas Personalizadas)
+// ==========================================
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['accion'])) {
 
-    // Validar datos obligatorios
-    if (
-        empty($_POST['id_paciente']) || empty($_POST['id_odontologo']) ||
-        empty($_POST['fecha']) || empty($_POST['hora']) || empty($_POST['motivo'])
-    ) {
+    // Validar datos básicos
+    if (empty($_POST['fecha']) || empty($_POST['hora_inicio']) || empty($_POST['hora_fin'])) {
         header("Location: ../views/citas/calendario.php?error=datos_incompletos");
         exit;
     }
 
-    $inicio = $_POST['fecha'] . ' ' . $_POST['hora'];
-    $duracion = 30; // Duración fija de 30 minutos
-    $fin = date('Y-m-d H:i:s', strtotime($inicio . " +$duracion minutes"));
+    // Construir fechas completas (Fecha + Hora)
+    $inicio = $_POST['fecha'] . ' ' . $_POST['hora_inicio']; // Ej: 2023-10-20 09:30
+    $fin = $_POST['fecha'] . ' ' . $_POST['hora_fin'];       // Ej: 2023-10-20 10:20
+    
     $id_odontologo = $_POST['id_odontologo'];
-    $id_paciente = $_POST['id_paciente']; // ← AGREGAR ESTA LÍNEA
-
+    $id_paciente = $_POST['id_paciente'];
     $id_cita = isset($_POST['id_cita']) && !empty($_POST['id_cita']) ? $_POST['id_cita'] : null;
 
-    // Verificar disponibilidad del horario
+    // Validación 1: La hora fin debe ser mayor a inicio
+    if (strtotime($fin) <= strtotime($inicio)) {
+        header("Location: ../views/citas/calendario.php?error=hora_invalida");
+        exit;
+    }
+
+    // Validación 2: Disponibilidad en base de datos (ignora canceladas)
     if (!$citaModel->verificarDisponibilidad($id_odontologo, $id_paciente, $inicio, $fin, $id_cita)) {
         header("Location: ../views/citas/calendario.php?error=ocupado");
         exit;
     }
 
+    // Preparar datos para el modelo
     $datos = [
-        'id_paciente' => $_POST['id_paciente'],
+        'id_paciente' => $id_paciente,
         'id_odontologo' => $id_odontologo,
         'inicio' => $inicio,
         'fin' => $fin,
@@ -122,18 +127,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['accion'])) {
         'id_usuario' => $_SESSION['id_usuario']
     ];
 
-    // Editar cita existente
+    // Editar o Crear
     if ($id_cita) {
         $datos['id_cita'] = $id_cita;
-
         if ($citaModel->actualizar($datos)) {
             header("Location: ../views/citas/calendario.php?ok=editado");
         } else {
             header("Location: ../views/citas/calendario.php?error=1");
         }
-    }
-    // Crear nueva cita
-    else {
+    } else {
         if ($citaModel->crear($datos)) {
             header("Location: ../views/citas/calendario.php?ok=creado");
         } else {
@@ -141,3 +143,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['accion'])) {
         }
     }
 }
+?>
