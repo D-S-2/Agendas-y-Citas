@@ -5,7 +5,7 @@
  */
 class Database {
     private $host = 'localhost';
-    private $db_name = 'clinica_odontologica';
+    private $db_name = 'clinica_odontologica2';
     private $username = 'root'; 
     private $password = ''; 
     public $conn;
