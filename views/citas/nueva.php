@@ -73,7 +73,10 @@ $hora_inicio = isset($_GET['hora']) ? $_GET['hora'] : '08:30';
                             <option value="">Buscar paciente...</option>
                             <?php foreach ($pacientes as $p): ?>
                                 <option value="<?php echo $p['id_paciente']; ?>">
-                                    <?php echo $p['ci'] . ' - ' . $p['nombres'] . ' ' . $p['apellido_paterno']; ?>
+                                    <?php 
+                                        $dep = !empty($p['departamento']) ? " (" . $p['departamento'] . ")" : "";
+                                        echo $p['ci'] . $dep . ' - ' . $p['nombres'] . ' ' . $p['apellido_paterno']; 
+                                    ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>

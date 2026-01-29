@@ -33,7 +33,8 @@ class Cita
 
     public function obtenerPorId($id)
     {
-        $query = "SELECT c.*, p.ci, p.nombres as nombre_paciente, p.apellido_paterno
+        // CAMBIO: Se agregó p.departamento
+        $query = "SELECT c.*, p.ci, p.departamento, p.nombres as nombre_paciente, p.apellido_paterno
                   FROM " . $this->table . " c
                   INNER JOIN pacientes p ON c.id_paciente = p.id_paciente
                   WHERE c.id_cita = :id";
@@ -153,8 +154,9 @@ class Cita
 
     public function obtenerCitasDelDia($fecha, $id_odontologo = null)
     {
+        // CAMBIO: Se agregó p.departamento
         $sql = "SELECT c.id_cita, c.fecha_hora_inicio, c.fecha_hora_fin, c.estado, c.motivo,
-                CONCAT(p.nombres, ' ', p.apellido_paterno) as paciente, p.ci, p.telefono,
+                CONCAT(p.nombres, ' ', p.apellido_paterno) as paciente, p.ci, p.departamento, p.telefono,
                 CONCAT(u.nombres, ' ', u.apellidos) as odontologo
                 FROM citas c
                 INNER JOIN pacientes p ON c.id_paciente = p.id_paciente

@@ -85,7 +85,10 @@ $hora_fin = date('H:i', strtotime($cita['fecha_hora_fin']));
                         <select name="id_paciente" class="form-control select2" required style="width: 100%;">
                             <?php foreach ($pacientes as $p): ?>
                                 <option value="<?php echo $p['id_paciente']; ?>" <?php echo ($p['id_paciente'] == $cita['id_paciente']) ? 'selected' : ''; ?>>
-                                    <?php echo $p['ci'] . ' - ' . $p['nombres'] . ' ' . $p['apellido_paterno']; ?>
+                                    <?php 
+                                        $dep = !empty($p['departamento']) ? " (" . $p['departamento'] . ")" : "";
+                                        echo $p['ci'] . $dep . ' - ' . $p['nombres'] . ' ' . $p['apellido_paterno']; 
+                                    ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>

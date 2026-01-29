@@ -127,8 +127,9 @@ $citas = $citaModel->obtenerCitasDelDia($fecha, $id_odontologo);
                                 <h4 style="margin: 0; font-size: 1.1rem; color: #2c3e50;">
                                     <?php echo $c['paciente']; ?>
                                 </h4>
-                                <span style="background: white; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; color: #666;">
-                                    CI: <?php echo $c['ci']; ?>
+                                <span style="background: white; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; color: #666; border: 1px solid #eee;">
+                                    CI: <?php echo $c['ci']; ?> 
+                                    <?php echo (!empty($c['departamento'])) ? ' (' . $c['departamento'] . ')' : ''; ?>
                                 </span>
                             </div>
 
