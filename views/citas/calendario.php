@@ -17,57 +17,25 @@ $fecha_hoy = date('Y-m-d');
 <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
+<?php if(isset($_GET['error']) && $_GET['error'] == 'fecha_pasada'): ?>
+    <script>alert("⛔ ERROR: No es posible agendar citas en fechas u horas pasadas.");</script>
+<?php endif; ?>
+
 <style>
     .form-container-inline {
         background: white; padding: 25px; border-radius: 12px;
         box-shadow: 0 8px 30px rgba(0,0,0,0.08); margin-bottom: 30px;
         border-top: 6px solid #3498db;
     }
-
-    /* --- DISEÑO DE TRATAMIENTOS ORDENADO --- */
-    .treatment-section {
-        background: #fcfcfc; border: 1px solid #edf0f2; border-radius: 8px;
-        padding: 15px; max-height: 400px; overflow-y: auto;
-    }
-
-    .category-block { margin-bottom: 15px; }
-
-    .category-header {
-        font-size: 0.7rem; font-weight: 800; color: #7f8c8d;
-        text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
-        display: flex; align-items: center; gap: 10px;
-    }
-
-    .category-header::after { content: ""; flex: 1; height: 1px; background: #eee; }
-
-    .treatment-grid {
-        display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px;
-    }
-
+    .treatment-section { background: #fcfcfc; border: 1px solid #edf0f2; border-radius: 8px; padding: 15px; max-height: 400px; overflow-y: auto; }
+    .category-header { font-size: 0.7rem; font-weight: 800; color: #7f8c8d; text-transform: uppercase; margin-bottom: 8px; border-bottom: 1px solid #eee; }
+    .treatment-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; margin-bottom: 15px;}
     .t-btn-mini {
-        background: #fff; border: 1px solid #dce1e5; border-radius: 5px;
-        padding: 8px 10px; cursor: pointer; display: flex;
-        justify-content: space-between; align-items: center;
-        font-size: 0.8rem; color: #34495e; transition: all 0.2s;
+        background: #fff; border: 1px solid #dce1e5; border-radius: 5px; padding: 8px 10px;
+        cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+        font-size: 0.8rem; color: #34495e;
     }
-
-    .t-btn-mini:hover { border-color: #3498db; background: #f0f7ff; }
-
-    .t-btn-mini.active {
-        background: #3498db; color: white; border-color: #2980b9;
-        box-shadow: 0 3px 8px rgba(52, 152, 219, 0.3);
-    }
-
-    .t-time-badge {
-        font-size: 0.65rem; background: #f1f3f5; padding: 1px 6px;
-        border-radius: 10px; color: #7f8c8d; font-weight: bold;
-    }
-
-    .t-btn-mini.active .t-time-badge { background: rgba(255,255,255,0.25); color: white; }
-
-    /* Scrollbar */
-    .treatment-section::-webkit-scrollbar { width: 5px; }
-    .treatment-section::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+    .t-btn-mini.active { background: #3498db; color: white; border-color: #2980b9; }
 </style>
 
 <main class="main-content">
@@ -78,7 +46,6 @@ $fecha_hoy = date('Y-m-d');
     <div class="form-container-inline">
         <form action="../../controllers/citaController.php" method="POST" id="formCita">
             <div style="display: grid; grid-template-columns: 1fr 1.8fr; gap: 30px;">
-                
                 <div>
                     <h4 style="margin-bottom: 15px; color: #2c3e50;"><i class="fas fa-user-edit"></i> Datos de la Cita</h4>
                     
@@ -109,7 +76,7 @@ $fecha_hoy = date('Y-m-d');
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                             <div class="form-group">
                                 <label>Fecha:</label>
-                                <input type="date" name="fecha" id="form_fecha" class="form-control" value="<?php echo $fecha_hoy; ?>" required>
+                                <input type="date" name="fecha" id="form_fecha" class="form-control" value="<?php echo $fecha_hoy; ?>" min="<?php echo $fecha_hoy; ?>" required>
                             </div>
                             <div class="form-group">
                                 <label>Inicio:</label>
@@ -117,7 +84,7 @@ $fecha_hoy = date('Y-m-d');
                             </div>
                         </div>
                         <div class="form-group" style="margin-top: 10px;">
-                            <label>Fin estimado (Automático):</label>
+                            <label>Fin estimado:</label>
                             <input type="time" name="hora_fin" id="form_fin" class="form-control" readonly style="background: #e9ecef;">
                         </div>
                         <div class="form-group" style="margin-top: 10px;">
@@ -130,59 +97,34 @@ $fecha_hoy = date('Y-m-d');
                 <div>
                     <h4 style="margin-bottom: 15px; color: #2c3e50;"><i class="fas fa-tooth"></i> Seleccione Tratamiento</h4>
                     <div class="treatment-section">
-                        <div class="category-block">
-                            <div class="category-header">1. Diagnóstico y Urgencias</div>
-                            <div class="treatment-grid">
-                                <div class="t-btn-mini" onclick="setTratamiento(this, 'Consulta / Valoración', 15)"><span>Consulta</span><span class="t-time-badge">15m</span></div>
-                                <div class="t-btn-mini" onclick="setTratamiento(this, 'Urgencia / Dolor Agudo', 30)"><span>Urgencia</span><span class="t-time-badge">30m</span></div>
-                            </div>
+                        <div class="category-header">1. Diagnóstico y Urgencias</div>
+                        <div class="treatment-grid">
+                            <div class="t-btn-mini" onclick="setTratamiento(this, 'Consulta / Valoración', 15)"><span>Consulta</span><b>15m</b></div>
+                            <div class="t-btn-mini" onclick="setTratamiento(this, 'Urgencia / Dolor Agudo', 30)"><span>Urgencia</span><b>30m</b></div>
                         </div>
-
-                        <div class="category-block">
-                            <div class="category-header">2. Higiene y Estética</div>
-                            <div class="treatment-grid">
-                                <div class="t-btn-mini" onclick="setTratamiento(this, 'Limpieza Dental (Profilaxis)', 30)"><span>Limpieza</span><span class="t-time-badge">30m</span></div>
-                                <div class="t-btn-mini" onclick="setTratamiento(this, 'Blanqueamiento Dental', 60)"><span>Blanqueamiento</span><span class="t-time-badge">60m</span></div>
-                            </div>
+                        <div class="category-header">2. Higiene y Estética</div>
+                        <div class="treatment-grid">
+                            <div class="t-btn-mini" onclick="setTratamiento(this, 'Limpieza Dental', 30)"><span>Limpieza</span><b>30m</b></div>
+                            <div class="t-btn-mini" onclick="setTratamiento(this, 'Blanqueamiento', 60)"><span>Blanqueamiento</span><b>60m</b></div>
                         </div>
-
-                        <div class="category-block">
-                            <div class="category-header">3. Operatoria / Curaciones</div>
-                            <div class="treatment-grid">
-                                <div class="t-btn-mini" onclick="setTratamiento(this, 'Curación Simple', 30)"><span>Simple</span><span class="t-time-badge">30m</span></div>
-                                <div class="t-btn-mini" onclick="setTratamiento(this, 'Curación Media', 45)"><span>Media</span><span class="t-time-badge">45m</span></div>
-                                <div class="t-btn-mini" onclick="setTratamiento(this, 'Curación Compleja', 60)"><span>Compleja</span><span class="t-time-badge">60m</span></div>
-                            </div>
+                        <div class="category-header">3. Operatoria</div>
+                        <div class="treatment-grid">
+                            <div class="t-btn-mini" onclick="setTratamiento(this, 'Curación Simple', 30)"><span>Simple</span><b>30m</b></div>
+                            <div class="t-btn-mini" onclick="setTratamiento(this, 'Curación Media', 45)"><span>Media</span><b>45m</b></div>
+                            <div class="t-btn-mini" onclick="setTratamiento(this, 'Curación Compleja', 60)"><span>Compleja</span><b>60m</b></div>
                         </div>
-
-                        <div class="category-block">
-                            <div class="category-header">4. Cirugía / Extracciones</div>
-                            <div class="treatment-grid">
-                                <div class="t-btn-mini" onclick="setTratamiento(this, 'Extracción de Incisivos', 30)"><span>Incisivos</span><span class="t-time-badge">30m</span></div>
-                                <div class="t-btn-mini" onclick="setTratamiento(this, 'Extracción de Caninos', 45)"><span>Caninos</span><span class="t-time-badge">45m</span></div>
-                                <div class="t-btn-mini" onclick="setTratamiento(this, 'Extracción de Premolares', 45)"><span>Premolares</span><span class="t-time-badge">45m</span></div>
-                                <div class="t-btn-mini" onclick="setTratamiento(this, 'Extracción de Molares', 60)"><span>Molares</span><span class="t-time-badge">60m</span></div>
-                            </div>
+                        <div class="category-header">4. Extracciones</div>
+                        <div class="treatment-grid">
+                            <div class="t-btn-mini" onclick="setTratamiento(this, 'Extracción Incisivos', 30)"><span>Incisivos</span><b>30m</b></div>
+                            <div class="t-btn-mini" onclick="setTratamiento(this, 'Extracción Molares', 60)"><span>Molares</span><b>60m</b></div>
                         </div>
-
-                        <div class="category-block">
-                            <div class="category-header">5. Endodoncia</div>
-                            <div class="treatment-grid">
-                                <div class="t-btn-mini" onclick="setTratamiento(this, 'Tratamiento de Conducto', 60)"><span>Trat. Conducto</span><span class="t-time-badge">60m</span></div>
-                            </div>
-                        </div>
-
-                        <div class="category-block">
-                            <div class="category-header">6. Ortodoncia</div>
-                            <div class="treatment-grid">
-                                <div class="t-btn-mini" onclick="setTratamiento(this, 'Servicio de Brackets - Tipo 1', 20)"><span>Brackets T1</span><span class="t-time-badge">20m</span></div>
-                                <div class="t-btn-mini" onclick="setTratamiento(this, 'Servicio de Brackets - Tipo 2', 20)"><span>Brackets T2</span><span class="t-time-badge">20m</span></div>
-                                <div class="t-btn-mini" onclick="setTratamiento(this, 'Servicio de Brackets - Tipo 3', 20)"><span>Brackets T3</span><span class="t-time-badge">20m</span></div>
-                            </div>
+                        <div class="category-header">5. Ortodoncia</div>
+                        <div class="treatment-grid">
+                            <div class="t-btn-mini" onclick="setTratamiento(this, 'Control Ortodoncia', 20)"><span>Control</span><b>20m</b></div>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn-primary" style="margin-top: 20px; width: 100%; height: 45px;">
+                    <button type="submit" class="btn-primary" style="margin-top: 20px; width: 100%; height: 45px; justify-content: center;">
                         <i class="fas fa-calendar-plus"></i> AGENDAR CITA
                     </button>
                 </div>
@@ -219,7 +161,50 @@ $fecha_hoy = date('Y-m-d');
     $(document).ready(function() {
         $('.select2').select2();
         initCalendar();
+        validarHoraInput(); // Ejecutar al cargar
     });
+
+    // Validar input manual de fecha/hora
+    $('#form_fecha').on('change', function() {
+        validarHoraInput();
+        calcularHoraFin();
+    });
+
+    $('#form_inicio').on('change', function() {
+        let fechaSel = $('#form_fecha').val();
+        let horaSel = $(this).val();
+        if(!validarFuturo(fechaSel, horaSel)) {
+            alert("⚠️ No puedes seleccionar una hora pasada.");
+            // Resetear a hora actual
+            let now = new Date();
+            let h = now.getHours().toString().padStart(2,'0');
+            let m = now.getMinutes().toString().padStart(2,'0');
+            $(this).val(h + ':' + m);
+        }
+        calcularHoraFin();
+    });
+
+    function validarHoraInput() {
+        let fechaInput = document.getElementById('form_fecha').value;
+        let hoy = new Date().toISOString().split('T')[0];
+        
+        // Si la fecha seleccionada es HOY, ponemos el mínimo de hora a la hora actual
+        if (fechaInput === hoy) {
+            let ahora = new Date();
+            let horas = ahora.getHours().toString().padStart(2, '0');
+            let minutos = ahora.getMinutes().toString().padStart(2, '0');
+            document.getElementById('form_inicio').min = horas + ":" + minutos;
+        } else {
+            document.getElementById('form_inicio').removeAttribute('min');
+        }
+    }
+
+    function validarFuturo(fechaStr, horaStr) {
+        if(!horaStr) return true;
+        let fechaCita = new Date(fechaStr + 'T' + horaStr);
+        let ahora = new Date();
+        return fechaCita >= ahora;
+    }
 
     function setTratamiento(elemento, nombre, minutos) {
         $('.t-btn-mini').removeClass('active');
@@ -237,19 +222,23 @@ $fecha_hoy = date('Y-m-d');
         $('#form_fin').val(d.getHours().toString().padStart(2, '0') + ":" + d.getMinutes().toString().padStart(2, '0'));
     }
 
-    $('#form_inicio').on('change', calcularHoraFin);
-
     function initCalendar() {
         var calendarEl = document.getElementById('calendar');
         calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth', 
             locale: 'es',
-            slotMinTime: '08:30:00',
-            slotMaxTime: '18:30:00',
+            slotMinTime: '08:00:00', // Empieza a mostrar desde las 8am
+            slotMaxTime: '19:00:00',
             allDaySlot: false,
-            hiddenDays: [0], // Domingo oculto
-            height: 700,
-            // BARRA DE HERRAMIENTAS RESTAURADA
+            hiddenDays: [0], 
+            height: 750,
+            
+            // --- AQUÍ ESTÁ LA MAGIA PARA QUE NO SE SOBREPONGAN ---
+            slotEventOverlap: false, 
+            
+            // Scroll automático a la hora actual para no ver tanto "pasado"
+            scrollTime: '<?php echo date("H:i:s"); ?>',
+            
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
@@ -261,10 +250,32 @@ $fecha_hoy = date('Y-m-d');
                     .then(res => res.json()).then(data => success(data));
             },
             dateClick: function(info) {
+                // --- LÓGICA DE BLOQUEO AL HACER CLIC ---
+                let clickDateTime = new Date(info.dateStr);
+                let ahora = new Date();
+
+                // Si es vista mensual, verificamos solo el día
+                if(info.view.type === 'dayGridMonth') {
+                    let clickSoloDia = new Date(info.dateStr + "T23:59:59"); // Final del día clickeado
+                    if (clickSoloDia < ahora) {
+                        alert("⚠️ No puedes agendar en días pasados.");
+                        return; // Detener función, no llena el formulario
+                    }
+                } else {
+                    // Si es vista semanal/diaria, verificamos hora exacta
+                    if (clickDateTime < ahora) {
+                        alert("⚠️ Esa hora ya pasó. Por favor selecciona un horario futuro.");
+                        return; // Detener función
+                    }
+                }
+
+                // Si pasa la validación, llenar formulario
                 let fecha = info.dateStr.split('T')[0];
                 let hora = info.dateStr.split('T')[1] ? info.dateStr.split('T')[1].substring(0, 5) : "08:30";
+
                 $('#form_fecha').val(fecha);
                 $('#form_inicio').val(hora);
+                validarHoraInput();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 calcularHoraFin();
             },
@@ -277,7 +288,6 @@ $fecha_hoy = date('Y-m-d');
 
     function filtrarCalendario() {
         calendar.refetchEvents();
-        // Sincronizar doctor en el formulario
         let val = $('#filtroDoctor').val();
         if(val) $('#form_id_odontologo').val(val).trigger('change');
     }

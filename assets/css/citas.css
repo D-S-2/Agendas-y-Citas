@@ -1,4 +1,4 @@
-/* --- 1. ENCABEZADO Y BOTÓN PRINCIPAL --- */
+/* --- 1. ENCABEZADO Y BOTONES --- */
 .page-header {
     display: flex;
     justify-content: space-between;
@@ -14,7 +14,6 @@
     font-size: 1.5rem;
 }
 
-/* El botón "+ Nueva Cita" */
 .btn-primary {
     background-color: #3498db;
     color: white;
@@ -30,6 +29,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    text-decoration: none; 
 }
 
 .btn-primary:hover {
@@ -37,7 +37,7 @@
     transform: translateY(-2px);
 }
 
-/* --- 2. EL CALENDARIO COMPACTO --- */
+/* --- 2. CONTENEDOR DEL CALENDARIO --- */
 #calendar-container {
     background: white;
     padding: 15px;
@@ -48,109 +48,85 @@
     overflow: hidden; 
 }
 
-/* Ajustes de FullCalendar */
-.fc {
-    height: 100%;
-    font-size: 0.9rem;
+/* Ajustes Base de FullCalendar */
+.fc { height: 100%; font-size: 0.9rem; }
+.fc-toolbar-title { font-size: 1.2rem !important; color: #2c3e50; }
+.fc-button { padding: 4px 8px !important; font-size: 0.85rem !important; text-transform: capitalize; }
+
+/* ============================================================
+   SOLUCIÓN VISUAL: LÍNEAS NEGRAS Y DEFINIDAS
+   ============================================================ */
+/* Forzar color negro en bordes de celdas, cabeceras y grilla */
+.fc-theme-standard td, 
+.fc-theme-standard th,
+.fc-scrollgrid,
+.fc-timegrid-slot, 
+.fc-timegrid-slot-lane,
+.fc-col-header-cell,
+.fc-timegrid-axis {
+    border-color: #000000 !important; /* Negro absoluto */
 }
 
-.fc-toolbar-title {
-    font-size: 1.2rem !important;
+/* Líneas de las medias horas (punteadas) también negras */
+.fc-timegrid-slot-minor {
+    border-top-style: dotted !important;
+    border-top-color: #000000 !important; 
 }
 
-.fc-button {
-    padding: 4px 8px !important;
-    font-size: 0.85rem !important;
+/* Encabezados de días más visibles */
+.fc-col-header-cell-cushion {
+    color: #000;
+    font-weight: 800;
+    text-decoration: none;
 }
 
-/* --- AJUSTE IMPORTANTE: CITAS CORTAS (Semana/Día) --- */
+/* ============================================================
+   SOLUCIÓN VISUAL: EVENTOS QUE NO SE SOBREPONEN
+   ============================================================ */
 .fc-timegrid-event {
-    min-height: 50px !important; /* Forzar altura mínima */
-    margin-bottom: 2px !important;
-    border: none !important;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    margin: 1px !important; /* Pequeño margen para separar */
+    border: 1px solid #fff !important; /* Borde blanco para definir límites */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.25); /* Sombra para dar relieve */
+    border-radius: 4px;
+    opacity: 1 !important;
 }
 
 .fc-event-main {
-    padding: 4px !important;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    line-height: 1.2;
-}
-
-.fc-event-title {
-    font-weight: bold !important;
-    font-size: 0.85rem !important;
-    white-space: normal !important; /* Permite que el texto baje de línea */
+    padding: 2px 4px !important;
+    white-space: normal !important; /* Permitir que el texto baje de línea */
+    overflow: hidden;
+    line-height: 1.1;
+    color: white;
 }
 
 .fc-event-time {
     font-size: 0.75rem !important;
-    opacity: 0.9;
+    font-weight: 800;
     margin-bottom: 2px;
+    border-bottom: 1px solid rgba(255,255,255,0.3);
+    padding-bottom: 1px;
 }
 
-/* Citas en el Mes (vista normal) */
-.fc-daygrid-event {
-    cursor: pointer;
-    padding: 2px 4px;
-    font-size: 0.8rem;
-    border-radius: 3px;
-    margin-bottom: 1px;
+.fc-event-title {
+    font-weight: 600 !important;
+    font-size: 0.8rem !important;
 }
 
-.fc-daygrid-event:hover {
-    filter: brightness(90%);
-    transform: scale(1.01);
-}
-
-/* --- 3. VENTANA EMERGENTE (MODAL) --- */
-.modal {
-    display: none; 
-    position: fixed; 
-    z-index: 9999; 
-    left: 0;
-    top: 0;
-    width: 100%; 
-    height: 100%; 
-    background-color: rgba(0,0,0,0.6);
-    backdrop-filter: blur(3px);
-}
-
-.modal-content {
-    background-color: #fff;
-    margin: 2vh auto;
-    padding: 0;
-    border: none;
-    width: 90%;
-    max-width: 450px;
-    border-radius: 10px;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-    animation: slideDown 0.3s;
-}
-
-.modal-header {
-    background: #3498db;
-    color: white;
-    padding: 12px 20px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.modal-header h2 { margin: 0; font-size: 1.1rem; }
-
-.close { color: white; font-size: 24px; cursor: pointer; }
-.modal-body { padding: 20px; }
-
+/* --- 3. ESTILOS DE FORMULARIOS Y MODALES --- */
 .form-group { margin-bottom: 12px; }
 .form-group label { display: block; font-weight: 600; margin-bottom: 4px; color: #555; font-size: 0.9rem; }
 .form-control { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 0.95rem; background-color: #f9f9f9; }
 .form-control:focus { border-color: #3498db; background: white; outline: none; }
 
-@keyframes slideDown {
-    from { transform: translateY(-30px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+/* Botones de selección de tratamiento */
+.category-label { font-size: 0.7rem; font-weight: 800; color: #95a5a6; margin-top: 10px; margin-bottom: 4px; text-transform: uppercase; border-bottom: 1px solid #eee; }
+.treatment-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 6px; }
+
+.t-btn {
+    background: #fff; border: 1px solid #dcdcdc; border-radius: 4px; padding: 6px 8px;
+    cursor: pointer; text-align: left; transition: all 0.2s;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.8rem; color: #2c3e50;
 }
+.t-btn:hover { background: #f1f8ff; border-color: #3498db; }
+.t-btn.active { background-color: #3498db; color: white; border-color: #2980b9; font-weight: 600; }
